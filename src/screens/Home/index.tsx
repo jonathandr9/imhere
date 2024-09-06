@@ -1,28 +1,34 @@
+import { useState } from "react";
 import { Text, View, TextInput, TouchableOpacity, FlatList, Alert} from "react-native"
 import { styles } from './styles'
 import { Participant } from "../../components/Participant";
 
-//os componentes sempre tem letra maiuscula
-//A extensão do arquivo de componente tem que ser sempre .tsx
-
 export function Home() {
 
-  const participants = ['Jonathan', 'Gabriela', 'João', 'Mike', 'Jonelson', 'Julismandro', 'Manel', 'Janine', 'Zé', 'Neco', 'Maria', 'Tico', 'Juslio']
+  const [participants, setParticipants] = useState<string[]>([]); 
+  const [participantName, setParticipantName] = useState('');
 
   function handleParticipantAdd() {
 
-    if(participants.includes('Jonathan')){
+    if(participants.includes(participantName)){
       return Alert.alert("Participante Existe!","Já existe um participante na lista com esse nome");
     }
+
+    setParticipants(prevState => [...prevState, participantName]);    
+    setParticipantName('');
   }
 
   function handleParticipantRemove(name: string) {
+
     Alert.alert(
       "Remover", 
       `Deseja remover o participante ${name}?`, [
       {
         text: 'Sim',
-        onPress: () => Alert.alert("Deletado!")
+        onPress: () => {
+          setParticipants(prevState => prevState.filter(participant => participant !== name) );
+          Alert.alert("Deletado!");
+        }
       },
       {
         text: 'Não',
@@ -31,9 +37,7 @@ export function Home() {
     ]);    
   }
 
-
   return (
-    //A tag vazia(fragment) é porque a função não pode retornar mais  de um elemento    
     <View style={styles.container}>
 
       <Text key="1" style={styles.eventName}>
@@ -49,6 +53,8 @@ export function Home() {
           style={styles.input}
           placeholder="Nome do Participante"
           placeholderTextColor="#6b6b6b"
+          onChangeText={setParticipantName}
+          value={participantName}
         // keyboardType="numeric"
         />
 
@@ -64,14 +70,6 @@ export function Home() {
         </TouchableOpacity>
 
       </View>
-
-        {/* com scroll view */}
-        {/* showsVerticalScrollIndicator={false} */}
-        {/* {
-          participants.map(participant => (
-
-          ))
-        } */}
 
       <FlatList
         data={participants}
@@ -92,8 +90,6 @@ export function Home() {
 
         )}
       />
-      
-      
 
     </View>
   );
